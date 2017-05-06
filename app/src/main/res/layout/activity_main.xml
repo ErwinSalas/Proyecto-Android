@@ -3,18 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/green"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.pavilion.proyectomoviles.MainActivity">
 
-    <org.opencv.android.JavaCameraView
+    <com.example.pavilion.proyectomoviles.OpcvCamaraV
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:visibility="gone"
         android:id="@+id/camera_view"
         opencv:show_fps="true"
         opencv:camera_id="any" />
+
+
+    <Button
+        android:id="@+id/btnTomaFoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:background="@drawable/ic_photo_camera_24dp"
+        tools:layout_editor_absoluteX="102dp"
+        tools:layout_editor_absoluteY="115dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp" />
+
 </RelativeLayout>
