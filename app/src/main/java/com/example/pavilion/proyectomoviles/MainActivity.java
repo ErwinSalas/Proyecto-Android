@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
 
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
-    Button btnCamara;
+    FloatingActionButton btnCamara;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -89,7 +90,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         hammer=false;
-        btnCamara = (Button) findViewById(R.id.btnTomaFoto);
+        btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
         mOpenCvCameraView.setCvCameraViewListener(this);
         btnCamara.setOnClickListener(new View.OnClickListener() {
             @Override

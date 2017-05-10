@@ -17,19 +17,20 @@
         android:visibility="gone"
         android:id="@+id/camera_view"
         opencv:show_fps="true"
-        opencv:camera_id="any" />
+        opencv:camera_id="any"
+        opencv:theme="@style/Base.V7.Theme.AppCompat.Light"
+        />
 
-
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnTomaFoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        android:background="@drawable/ic_photo_camera_24dp"
+        android:src="@drawable/ic_photo_camera_24dp"
         tools:layout_editor_absoluteX="102dp"
         tools:layout_editor_absoluteY="115dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="13dp" />
+
 
 </RelativeLayout>
