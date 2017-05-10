@@ -17,6 +17,7 @@
         android:visibility="gone"
         android:id="@+id/camera_view"
         opencv:show_fps="true"
+
         opencv:camera_id="any"
         opencv:theme="@style/Base.V7.Theme.AppCompat.Light"
         />

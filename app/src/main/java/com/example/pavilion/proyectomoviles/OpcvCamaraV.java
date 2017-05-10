@@ -11,6 +11,8 @@ import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Surface;
+import android.view.WindowManager;
 
 public class OpcvCamaraV extends JavaCameraView implements PictureCallback {
 
@@ -80,5 +82,30 @@ public class OpcvCamaraV extends JavaCameraView implements PictureCallback {
             Log.e("PictureDemo", "Exception in photoCallback", e);
         }
 
+    }
+    public void setCameraDisplayOrientation(Camera.CameraInfo info) {
+
+        WindowManager windowManager = (WindowManager) getContext()
+                .getSystemService(Context.WINDOW_SERVICE);
+
+        int rotation = windowManager.getDefaultDisplay().getRotation();
+        int degrees = 0;
+
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        mCamera.setDisplayOrientation((info.orientation - degrees + 360) % 360);
     }
 }
