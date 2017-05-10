@@ -135,10 +135,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         SPECTRUM_SIZE = new org.opencv.core.Size(200, 64);
         CONTOUR_COLOR = new Scalar(255,0,0,255);
     }
-
+    @Override
     public void onCameraViewStopped() {
     }
-
+    @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
         if (hammer){
@@ -157,8 +157,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
             return mRgba;
         }
-
-        return inputFrame.rgba();
+        mRgba=inputFrame.rgba();
+        return mRgba ;
 
 
 
@@ -214,7 +214,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
-
         touchedRegionRgba.release();
         touchedRegionHsv.release();
 
