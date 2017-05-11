@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@color/green"
+    android:background="@color/colorPrimary"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.pavilion.proyectomoviles.MainActivity">
 
@@ -15,6 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:visibility="gone"
+
         android:id="@+id/camera_view"
         opencv:show_fps="true"
 
@@ -29,9 +30,9 @@
         android:src="@drawable/ic_photo_camera_24dp"
         tools:layout_editor_absoluteX="102dp"
         tools:layout_editor_absoluteY="115dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="13dp" />
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="13dp" />
 
 
 </RelativeLayout>

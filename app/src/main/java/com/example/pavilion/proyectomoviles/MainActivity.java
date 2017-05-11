@@ -18,8 +18,10 @@ import org.opencv.imgproc.Imgproc;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
@@ -90,8 +92,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView = (OpcvCamaraV) findViewById(R.id.camera_view);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        mOpenCvCameraView.setCameraDisplayOrientation(info);
+
         hammer=false;
         btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
         mOpenCvCameraView.setCvCameraViewListener(this);

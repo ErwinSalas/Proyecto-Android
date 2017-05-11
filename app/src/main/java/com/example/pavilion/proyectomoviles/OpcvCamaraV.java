@@ -83,11 +83,13 @@ public class OpcvCamaraV extends JavaCameraView implements PictureCallback {
         }
 
     }
-    public void setCameraDisplayOrientation(Camera.CameraInfo info) {
+    public void setCameraDisplayOrientation() {
 
         WindowManager windowManager = (WindowManager) getContext()
                 .getSystemService(Context.WINDOW_SERVICE);
-
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(this.getId(), info);
         int rotation = windowManager.getDefaultDisplay().getRotation();
         int degrees = 0;
 
@@ -106,6 +108,6 @@ public class OpcvCamaraV extends JavaCameraView implements PictureCallback {
                 break;
         }
 
-        mCamera.setDisplayOrientation((info.orientation - degrees + 360) % 360);
+        mCamera.setDisplayOrientation(( info.orientation - degrees + 360) % 360);
     }
 }
