@@ -100,6 +100,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
             @Override
             public void onClick(View v) {
                 hammer=true;
+                Toast.makeText(getBaseContext(),"Foto capturada con exito",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -187,6 +188,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         int y = (int)event.getY() - yOffset;
 
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
+        Toast.makeText(getBaseContext(),"Touch image coordinates: (" + x + ", " + y + ")",Toast.LENGTH_SHORT).show();
 
         if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
 
