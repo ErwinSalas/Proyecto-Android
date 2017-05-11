@@ -42,7 +42,7 @@ import com.example.pavilion.proyectomoviles.OpcvCamaraV;
 public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     private static final String TAG = "OCVSample::Activity";
     private boolean mIsColorSelected = false;
-    boolean hammer;
+    boolean hammer, justOneTouch;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
     private IntensityDetector mDetector;
@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
-    FloatingActionButton btnCamara;
+    FloatingActionButton btnCamara, btnReanudarFoto;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -95,7 +95,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         hammer=false;
         btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
+        btnReanudarFoto = (FloatingActionButton) findViewById(R.id.btnReanudarFoto);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        btnReanudarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hammer=false;
+            }
+        });
         btnCamara.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +110,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
                 Toast.makeText(getBaseContext(),"Foto capturada con exito",Toast.LENGTH_SHORT).show();
             }
         });
+        //setTargetColorScalar();
     }
 
     @Override
@@ -172,12 +180,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 
 
+    private void setTargetColorScalar() {
+        mBlobColorHsv = new Scalar(0,0,0);
+        mDetector.setHsvColor(mBlobColorHsv);
 
+    }
 
 
     @SuppressLint("SimpleDateFormat")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
         int cols = mRgba.cols();
         int rows = mRgba.rows();
 
@@ -188,7 +201,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         int y = (int)event.getY() - yOffset;
 
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
-        Toast.makeText(getBaseContext(),"Touch image coordinates: (" + x + ", " + y + ")",Toast.LENGTH_SHORT).show();
 
         if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
 
@@ -211,14 +223,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
+
+        mBlobColorHsv = new Scalar(0,0,0);
         mBlobColorRgba = convertFromScalarToHsv(mBlobColorHsv);
+
+        Toast.makeText(getBaseContext(),mBlobColorRgba.toString(),Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
                 ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");
 
         mDetector.setHsvColor(mBlobColorHsv);
 
-        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+        //+Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
         touchedRegionRgba.release();
