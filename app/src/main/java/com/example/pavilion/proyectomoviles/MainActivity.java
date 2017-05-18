@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     boolean hammer, justOneTouch;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
+    private Scalar colorSelectedByUser;
     private IntensityDetector mDetector;
     private Mat mRgba;
     private Mat mSpectrum;
@@ -157,13 +158,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         if (hammer){
             if (mIsColorSelected) {
+
                 mDetector.process(mRgba);
                 List<MatOfPoint> contours = mDetector.getContours();
                 Log.e(TAG, "Contours count: " + contours.size());
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
 
                 Mat colorLabel = mRgba.submat(4, 68, 4, 68);
-                colorLabel.setTo(mBlobColorRgba);
+                //colorLabel.setTo(mBlobColorRgba);
 
                 Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
                 mSpectrum.copyTo(spectrumLabel);
@@ -185,6 +187,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mDetector.setHsvColor(mBlobColorHsv);
 
     }
+
 
 
     @SuppressLint("SimpleDateFormat")
@@ -218,23 +221,25 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
         // Calculate average color of touched region
-        mBlobColorHsv = Core.sumElems(touchedRegionHsv);
+        //mBlobColorHsv = Core.sumElems(touchedRegionHsv);
         int pointCount = touchedRect.width*touchedRect.height;
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
 
-        mBlobColorHsv = new Scalar(0,0,0);
+        //mBlobColorHsv = new Scalar(0,0,0,0);
+        mBlobColorHsv = new Scalar(60,255,120,0);
+
         mBlobColorRgba = convertFromScalarToHsv(mBlobColorHsv);
 
-        Toast.makeText(getBaseContext(),mBlobColorRgba.toString(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(),mBlobColorHsv.toString(),Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
                 ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");
 
         mDetector.setHsvColor(mBlobColorHsv);
 
-        //+Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+        //Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
         touchedRegionRgba.release();
@@ -242,6 +247,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         return false; // don't need subsequent touch events
     }
+
     private Scalar convertFromScalarToHsv(Scalar hsvColor) {
         Mat pointMatRgba = new Mat();
         Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
