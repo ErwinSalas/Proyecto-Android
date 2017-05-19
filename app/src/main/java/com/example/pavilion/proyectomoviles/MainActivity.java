@@ -27,6 +27,10 @@ import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +45,7 @@ import android.widget.Toast;
 
 import com.example.pavilion.proyectomoviles.OpcvCamaraV;
 
-public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
+public class MainActivity extends AppCompatActivity implements CvCameraViewListener2, OnTouchListener {
     private static final String TAG = "OCVSample::Activity";
     private boolean mIsColorSelected = false;
     boolean hammer, justOneTouch;
@@ -172,10 +176,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
             if (!mIsColorSelected) {
                 if (colorSelectedByUser()) {
                     mIsColorSelected = true;
-                    Toast.makeText(getBaseContext(),"Hay coincidencias!",Toast.LENGTH_SHORT).show();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Enfermedad","Falta de potasio");
+                    bundle.putString("descripcion", "La hoja presenta problemas de potasio");
+
+                    MessageFragment messageFragment = new MessageFragment();
+                    messageFragment.setArguments(bundle);
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.add(R.id.main, messageFragment);
+                    fragmentTransaction.commit();
                 }
             }
-
             return mRgba;
         }
         mRgba=inputFrame.rgba();
