@@ -55,7 +55,7 @@
         tools:layout_editor_absoluteX="102dp"
         tools:layout_editor_absoluteY="120dp"
         android:layout_alignParentRight="true"
-        android:layout_above="@id/btnReanudarFoto"
+        android:layout_below="@id/btnTomaFoto"
         android:layout_marginBottom="14dp"
         android:layout_centerVertical="true"
         android:layout_marginRight="14dp" />
