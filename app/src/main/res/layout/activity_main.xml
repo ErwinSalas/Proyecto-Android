@@ -28,37 +28,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_photo_camera_24dp"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="115dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
         android:layout_centerVertical="true"
-        android:layout_marginRight="14dp" />
+        android:layout_marginRight="14dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnReanudarFoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/restart"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="120dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
         android:layout_above="@id/btnTomaFoto"
-        android:layout_marginBottom="14dp"
         android:layout_centerVertical="true"
-        android:layout_marginRight="14dp" />
+        android:layout_marginRight="14dp"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnGuardarColor"
+        android:id="@+id/btnAgregarColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/restart"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="120dp"
+        android:src="@drawable/signadd"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
         android:layout_below="@id/btnTomaFoto"
-        android:layout_marginBottom="14dp"
         android:layout_centerVertical="true"
-        android:layout_marginRight="14dp" />
+        android:layout_marginRight="14dp"/>
 
 
 </RelativeLayout>

@@ -43,11 +43,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static final String TAG = "OCVSample::Activity";
     private boolean mIsColorSelected = false;
     boolean hammer, justOneTouch;
+    private int cantidadDeCoincidencias;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
     private Scalar colorSelectedByUser;
     private IntensityDetector mDetector;
     private Mat mRgba;
+    private List<MatOfPoint> contours;
     private Mat mSpectrum;
     private org.opencv.core.Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
@@ -95,6 +97,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
         hammer=false;
+        cantidadDeCoincidencias = 0;
         btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
         btnReanudarFoto = (FloatingActionButton) findViewById(R.id.btnReanudarFoto);
         mOpenCvCameraView.setCvCameraViewListener(this);
@@ -157,18 +160,31 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
         if (hammer){
-            if (mIsColorSelected) {
-
-                mDetector.process(mRgba);
-                List<MatOfPoint> contours = mDetector.getContours();
+            if (!mIsColorSelected) {
+                colorSelectedByUser();
+                /*mDetector.process(mRgba);
+                contours = mDetector.getContours();
                 Log.e(TAG, "Contours count: " + contours.size());
+                //Toast.makeText(getBaseContext(),contours.size(),Toast.LENGTH_SHORT).show();
+                if (contours.size() == 0) {
+                    setTargetColorScalar();
+                    Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
+                }/*
+                else {
+                    mBlobColorHsv = new Scalar(0,0,0,0);
+                    mDetector.process(mRgba);
+                    contours = mDetector.getContours();
+                    Log.e(TAG, "Contours count: " + contours.size());
+                    Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" + contours.size());
+
+                }
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
 
                 Mat colorLabel = mRgba.submat(4, 68, 4, 68);
                 //colorLabel.setTo(mBlobColorRgba);
 
                 Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-                mSpectrum.copyTo(spectrumLabel);
+                mSpectrum.copyTo(spectrumLabel);*/
             }
 
             return mRgba;
@@ -177,18 +193,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         return mRgba ;
 
 
-
     }
-
-
-
     private void setTargetColorScalar() {
-        mBlobColorHsv = new Scalar(0,0,0);
+        mBlobColorHsv = new Scalar(0,0,0,0);
         mDetector.setHsvColor(mBlobColorHsv);
 
     }
 
-
+    private void colorSelectedByUser() {
+        mBlobColorHsv = new Scalar(60,255,120,0);
+        mDetector.setHsvColor(mBlobColorHsv);
+        Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" );
+    }
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -221,14 +237,15 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
         // Calculate average color of touched region
-        //mBlobColorHsv = Core.sumElems(touchedRegionHsv);
+        mBlobColorHsv = Core.sumElems(touchedRegionHsv);
         int pointCount = touchedRect.width*touchedRect.height;
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
 
         //mBlobColorHsv = new Scalar(0,0,0,0);
-        mBlobColorHsv = new Scalar(60,255,120,0);
+
+        //mBlobColorHsv = new Scalar(60,255,120,0);
 
         mBlobColorRgba = convertFromScalarToHsv(mBlobColorHsv);
 
