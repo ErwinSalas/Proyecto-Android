@@ -98,22 +98,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         hammer=false;
         cantidadDeCoincidencias = 0;
-        btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
-        btnReanudarFoto = (FloatingActionButton) findViewById(R.id.btnReanudarFoto);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        btnReanudarFoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hammer=false;
-            }
-        });
-        btnCamara.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hammer=true;
-                Toast.makeText(getBaseContext(),"Foto capturada con exito",Toast.LENGTH_SHORT).show();
-            }
-        });
+
         //setTargetColorScalar();
     }
 
@@ -197,12 +182,31 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private void setTargetColorScalar() {
         mBlobColorHsv = new Scalar(0,0,0,0);
         mDetector.setHsvColor(mBlobColorHsv);
-
     }
 
     private void colorSelectedByUser() {
         mBlobColorHsv = new Scalar(60,255,120,0);
         mDetector.setHsvColor(mBlobColorHsv);
+        mDetector.process(mRgba);
+        contours = mDetector.getContours();
+        Log.e(TAG, "Contours count: " + contours.size());
+        /*Toast.makeText(getBaseContext(),contours.size(),Toast.LENGTH_SHORT).show();
+        if (contours.size() == 0) {
+            setTargetColorScalar();
+            Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
+        }/*
+        else {
+            mBlobColorHsv = new Scalar(0,0,0,0);
+            mDetector.process(mRgba);
+            contours = mDetector.getContours();
+            Log.e(TAG, "Contours count: " + contours.size());
+            Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" + contours.size());
+        }*/
+        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
+        Mat colorLabel = mRgba.submat(4, 68, 4, 68);
+        //colorLabel.setTo(mBlobColorRgba);
+        Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+        mSpectrum.copyTo(spectrumLabel);
         Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" );
     }
 
