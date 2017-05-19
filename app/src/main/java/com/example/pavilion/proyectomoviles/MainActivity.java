@@ -1,5 +1,6 @@
 package com.example.pavilion.proyectomoviles;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -25,6 +26,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +60,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private MenuItem[] mEffectMenuItems;
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
+    private List<Scalar> scalarList;
     private SubMenu mResolutionMenu;
     FloatingActionButton btnCamara, btnReanudarFoto;
 
@@ -98,8 +101,29 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         hammer=false;
         cantidadDeCoincidencias = 0;
-
+        btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
+        btnReanudarFoto = (FloatingActionButton) findViewById(R.id.btnReanudarFoto);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+        btnReanudarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hammer=false;
+            }
+        });
+        btnCamara.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hammer=true;
+                mIsColorSelected = false;
+            }
+        });
+        scalarList = new ArrayList<Scalar>();
+        mBlobColorHsv = new Scalar(60,255,120,0);
+        scalarList.add(mBlobColorHsv);
+        mBlobColorHsv = new Scalar(156,252,92,0);
         //setTargetColorScalar();
+        scalarList.add(mBlobColorHsv);
+        Toast.makeText(getBaseContext(),scalarList.toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -146,68 +170,47 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         if (hammer){
             if (!mIsColorSelected) {
-                colorSelectedByUser();
-                /*mDetector.process(mRgba);
-                contours = mDetector.getContours();
-                Log.e(TAG, "Contours count: " + contours.size());
-                //Toast.makeText(getBaseContext(),contours.size(),Toast.LENGTH_SHORT).show();
-                if (contours.size() == 0) {
-                    setTargetColorScalar();
-                    Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
-                }/*
-                else {
-                    mBlobColorHsv = new Scalar(0,0,0,0);
-                    mDetector.process(mRgba);
-                    contours = mDetector.getContours();
-                    Log.e(TAG, "Contours count: " + contours.size());
-                    Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" + contours.size());
-
+                if (colorSelectedByUser()) {
+                    mIsColorSelected = true;
+                    Toast.makeText(getBaseContext(),"Hay coincidencias!",Toast.LENGTH_SHORT).show();
                 }
-                Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
-
-                Mat colorLabel = mRgba.submat(4, 68, 4, 68);
-                //colorLabel.setTo(mBlobColorRgba);
-
-                Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-                mSpectrum.copyTo(spectrumLabel);*/
             }
 
             return mRgba;
         }
         mRgba=inputFrame.rgba();
         return mRgba ;
-
-
     }
     private void setTargetColorScalar() {
-        mBlobColorHsv = new Scalar(0,0,0,0);
+        //mBlobColorHsv = new Scalar(0,0,0,0);
         mDetector.setHsvColor(mBlobColorHsv);
+
     }
 
-    private void colorSelectedByUser() {
-        mBlobColorHsv = new Scalar(60,255,120,0);
-        mDetector.setHsvColor(mBlobColorHsv);
-        mDetector.process(mRgba);
-        contours = mDetector.getContours();
-        Log.e(TAG, "Contours count: " + contours.size());
-        /*Toast.makeText(getBaseContext(),contours.size(),Toast.LENGTH_SHORT).show();
-        if (contours.size() == 0) {
-            setTargetColorScalar();
-            Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
-        }/*
-        else {
-            mBlobColorHsv = new Scalar(0,0,0,0);
+    private boolean colorSelectedByUser() {
+        //mBlobColorHsv = new Scalar(60,255,120,0);
+        int posicion = 0;
+        while (posicion < scalarList.size()) {
+            mDetector.setHsvColor(scalarList.get(posicion));
+            Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" );
+
             mDetector.process(mRgba);
             contours = mDetector.getContours();
             Log.e(TAG, "Contours count: " + contours.size());
-            Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" + contours.size());
-        }*/
-        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
-        Mat colorLabel = mRgba.submat(4, 68, 4, 68);
-        //colorLabel.setTo(mBlobColorRgba);
-        Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-        mSpectrum.copyTo(spectrumLabel);
-        Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" );
+
+            if (contours.size() != 0) {
+                setTargetColorScalar();
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
+                Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
+
+                Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+                mSpectrum.copyTo(spectrumLabel);
+                return true;
+            }
+
+            posicion ++;
+        }
+        return false;
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -253,7 +256,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         mBlobColorRgba = convertFromScalarToHsv(mBlobColorHsv);
 
-        Toast.makeText(getBaseContext(),mBlobColorHsv.toString(),Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
                 ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");

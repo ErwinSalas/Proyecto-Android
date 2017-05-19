@@ -1,12 +1,15 @@
 package com.example.pavilion.proyectomoviles.Services;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -14,14 +17,9 @@ import retrofit2.http.Query;
  */
 public interface DeficientServiceFactory {
 
-    @POST("/deficients")
-    void createDeficient(@Body DeficientModel post, Callback<Boolean> postCallback);
-
-    @DELETE("/deficients")
-    void deleteDeficient(@Query("id") String nombre, Callback<Boolean> postCallback);
-
     @GET("/deficients")
-    void getDeficients(Callback<ArrayList<DeficientModel>> callback);
+    Call<List<DeficientModel>> getDeficients();
 
-
+    @POST("/deficients")
+    Call<DeficientModel> setDeficient(@Body DeficientModel model);
 }
