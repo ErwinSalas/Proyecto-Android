@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.example.pavilion.proyectomoviles"
@@ -26,8 +26,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile project(':openCVLibrary310')
-    compile files('libs/gson-2.8.0.jar')
-    compile files('libs/okhttp-2.2.0.jar')
-    compile files('libs/retrofit-2.1.0.jar')
+
 }
