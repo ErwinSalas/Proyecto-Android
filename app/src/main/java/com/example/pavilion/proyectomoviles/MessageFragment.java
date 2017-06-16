@@ -25,7 +25,7 @@ public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        String titulo = getArguments().getString("Enfermedad");
+        String titulo = getArguments().getString("titulo");
         String descripcion = getArguments().getString("descripcion");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

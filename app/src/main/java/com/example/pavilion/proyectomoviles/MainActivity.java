@@ -2,7 +2,6 @@ package com.example.pavilion.proyectomoviles;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
@@ -18,21 +17,14 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.hardware.Camera.Size;
-import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
@@ -40,18 +32,24 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.pavilion.proyectomoviles.OpcvCamaraV;
+import com.example.pavilion.proyectomoviles.Services.DeficientController;
+import com.example.pavilion.proyectomoviles.Services.Deficient;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2, OnTouchListener {
     private static final String TAG = "OCVSample::Activity";
     private boolean mIsColorSelected = false;
     boolean hammer, justOneTouch;
+    private DeficientController deficientController = new DeficientController();
     private int cantidadDeCoincidencias;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
+    private String namesD;
     private Scalar colorSelectedByUser;
     private IntensityDetector mDetector;
     private Mat mRgba;
@@ -65,8 +63,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
     private List<Scalar> scalarList;
+    private List<String> stringNamesList;
     private SubMenu mResolutionMenu;
-    FloatingActionButton btnCamara, btnReanudarFoto;
+    private List<Deficient> deficientList;
+    private Deficient deficient;
+    private FloatingActionButton btnCamara, btnReanudarFoto, btnAgregarColor;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
-
+        deficientList = new ArrayList<>();
         mOpenCvCameraView = (OpcvCamaraV) findViewById(R.id.camera_view);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -107,7 +108,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         cantidadDeCoincidencias = 0;
         btnCamara = (FloatingActionButton) findViewById(R.id.btnTomaFoto);
         btnReanudarFoto = (FloatingActionButton) findViewById(R.id.btnReanudarFoto);
+        btnAgregarColor = (FloatingActionButton) findViewById(R.id.btnAgregarColor);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        namesD = "";
         btnReanudarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,13 +124,34 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                 mIsColorSelected = false;
             }
         });
+        btnAgregarColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hammer=true;
+                mIsColorSelected = true;
+
+                Bundle bundle = new Bundle();
+                bundle.putString("titulo","Indicacion");
+                bundle.putString("descripcion", "Haga tap en el color deseado");
+
+                MessageFragment messageFragment = new MessageFragment();
+                messageFragment.setArguments(bundle);
+
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.main, messageFragment);
+                fragmentTransaction.commit();
+                closefragmentM(messageFragment);
+
+            }
+        });
+
         scalarList = new ArrayList<Scalar>();
+        stringNamesList = new ArrayList<String>();
         mBlobColorHsv = new Scalar(60,255,120,0);
         scalarList.add(mBlobColorHsv);
         mBlobColorHsv = new Scalar(156,252,92,0);
         //setTargetColorScalar();
         scalarList.add(mBlobColorHsv);
-        Toast.makeText(getBaseContext(),scalarList.toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -142,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public void onResume()
     {
         super.onResume();
+
         if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
@@ -171,14 +196,14 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-
         if (hammer){
             if (!mIsColorSelected) {
                 if (colorSelectedByUser()) {
                     mIsColorSelected = true;
                     Bundle bundle = new Bundle();
-                    bundle.putString("Enfermedad","Falta de potasio");
-                    bundle.putString("descripcion", "La hoja presenta problemas de potasio");
+                    Log.e(TAG, deficient.getName() + "*************????????????????????????****" );
+                    bundle.putString("titulo", deficient.getName());
+                    bundle.putString("descripcion", deficient.getDescription());
 
                     MessageFragment messageFragment = new MessageFragment();
                     messageFragment.setArguments(bundle);
@@ -186,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.add(R.id.main, messageFragment);
                     fragmentTransaction.commit();
+                    closefragmentM(messageFragment);
                 }
             }
             return mRgba;
@@ -193,14 +219,49 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mRgba=inputFrame.rgba();
         return mRgba ;
     }
-    private void setTargetColorScalar() {
-        //mBlobColorHsv = new Scalar(0,0,0,0);
-        mDetector.setHsvColor(mBlobColorHsv);
 
+    private void connectToGetData() {
+        Log.e(TAG, "************CONECTING TO DATA***********" );
+        Call<List<Deficient>> call = deficientController.getService().getDeficients();
+        Log.e(TAG, "************ALMOST TO DATA***********" );
+        call.enqueue(new Callback<List<Deficient>>() {
+            @Override
+            public void onResponse(Call<List<Deficient>> call, Response<List<Deficient>> response) {
+                List<Deficient> deficientList = response.body();
+                llenarListaColores(deficientList);
+                Log.e(TAG, "*************//////+++++99999999999999999++++++/////7**************" );
+                Log.e(TAG,response.body().toString());
+            }
+            @Override
+            public void onFailure(Call<List<Deficient>> call, Throwable t) {
+                Log.e(TAG, "*************//////+++++1010010101010101010+++++++/////7**************" );
+            }
+        });
+        Log.e(TAG, String.valueOf(deficientList.size()) );
+        Log.e(TAG, "************FINISH***********" );
+    }
+
+    private void llenarListaColores(List<Deficient> deficientLis) {
+        deficientList = deficientLis;
+        int contador = 0;
+        while (contador < deficientList.size()) {
+            Log.e(TAG, deficientList.get(contador).getName());
+            Log.e(TAG, deficientList.get(contador).getDescription());
+            Log.e(TAG, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" );
+            double r = deficientList.get(contador).getR();
+            double g = deficientList.get(contador).getG();
+            double b = deficientList.get(contador).getB();
+            double a = deficientList.get(contador).getA();
+            mBlobColorHsv = new Scalar(r,g,b,a);
+            scalarList.add(mBlobColorHsv);
+
+            contador ++;
+        }
     }
 
     private boolean colorSelectedByUser() {
         //mBlobColorHsv = new Scalar(60,255,120,0);
+        connectToGetData();
         int posicion = 0;
         while (posicion < scalarList.size()) {
             mDetector.setHsvColor(scalarList.get(posicion));
@@ -211,12 +272,15 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Log.e(TAG, "Contours count: " + contours.size());
 
             if (contours.size() != 0) {
-                setTargetColorScalar();
-                Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA----------00-------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
-
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAA----------11-------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                deficient = deficientList.get(posicion);
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAA----------22-------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAA----------33-------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 mSpectrum.copyTo(spectrumLabel);
+                Log.e(TAG, "PERRAAAAAAAAAAAAAAAA----------44-------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 return true;
             }
 
@@ -261,26 +325,66 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
-
-        //mBlobColorHsv = new Scalar(0,0,0,0);
-
-        //mBlobColorHsv = new Scalar(60,255,120,0);
-
         mBlobColorRgba = convertFromScalarToHsv(mBlobColorHsv);
 
 
         Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
                 ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");
 
+        Log.e(TAG, "*****************************************************//*////////////////////////////////////********************************************************************" );
+
         mDetector.setHsvColor(mBlobColorHsv);
+        mDetector.process(mRgba);
+        contours = mDetector.getContours();
+        Log.e(TAG, "Contours count: " + contours.size());
 
-        //Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+        Log.e(TAG, "PERRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-----------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + contours.size());
+        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
 
-        mIsColorSelected = true;
+        Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+        mSpectrum.copyTo(spectrumLabel);
+
+
+
         touchedRegionRgba.release();
         touchedRegionHsv.release();
 
+
+        Bundle bundle = new Bundle();
+
+
+
+        bundle.putString("color",mBlobColorHsv.toString());
+
+        AddDiseaseFragment addDiseaseFragment = new AddDiseaseFragment();
+
+        addDiseaseFragment.setArguments(bundle);
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.main, addDiseaseFragment);
+        fragmentTransaction.commit();
+
+        closefragmentA(addDiseaseFragment);
+
         return false; // don't need subsequent touch events
+    }
+
+    private void closefragmentA(AddDiseaseFragment addDiseaseFragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.remove(addDiseaseFragment);
+        fragmentTransaction.commit();
+
+    }
+
+    private void closefragmentM(MessageFragment addDiseaseFragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.remove(addDiseaseFragment);
+        fragmentTransaction.commit();
+
     }
 
     private Scalar convertFromScalarToHsv(Scalar hsvColor) {

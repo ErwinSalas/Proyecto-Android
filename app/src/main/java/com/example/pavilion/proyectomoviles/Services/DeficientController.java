@@ -1,8 +1,6 @@
 package com.example.pavilion.proyectomoviles.Services;
 
 
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,39 +25,22 @@ public class DeficientController {
         this.service = retrofit.create(DeficientServiceFactory.class);
     }
 
-    public String withoutParenthesis(String currentString) {
-        int position = 0;
-        String cadena = "";
-        while (position < currentString.length()) {
-            if (currentString.charAt(position) == '[' || currentString.charAt(position) == ']') {
-                position++;
-            } else {
-                cadena += currentString.charAt(position);
-            }
-        }
-        return cadena;
+    public DeficientServiceFactory getService() {
+        return service;
     }
 
-    public void create(String currentString, String name, String description) {
+    public void create() {
 
-        currentString = withoutParenthesis(currentString);
-
-        String[] separated = currentString.split(",");
-        Float r = Float.parseFloat(separated[0]);
-        Float g = Float.parseFloat(separated[1]);
-        Float b = Float.parseFloat(separated[2]);
-        Float a = Float.parseFloat(separated[3]);
-
-        DeficientModel deficientModel = new DeficientModel(name, description, r, g, b, a);
-        Call<DeficientModel> call = this.service.setDeficient(deficientModel);
-        call.enqueue(new Callback<DeficientModel>() {
+        Deficient deficient = Deficient.getInstance();
+        Call<Deficient> call = this.service.setDeficient(deficient);
+        call.enqueue(new Callback<Deficient>() {
             @Override
-            public void onResponse(Call<DeficientModel> call, Response<DeficientModel> response) {
+            public void onResponse(Call<Deficient> call, Response<Deficient> response) {
 
             }
 
             @Override
-            public void onFailure(Call<DeficientModel> call, Throwable t) {
+            public void onFailure(Call<Deficient> call, Throwable t) {
 
             }
         });
@@ -67,17 +48,17 @@ public class DeficientController {
 
     public void obtain() {
 
-        List<DeficientModel> deficientModel = new ArrayList<>();
-        Call<List<DeficientModel>> call = this.service.getDeficients();
-        call.enqueue(new Callback<List<DeficientModel>>() {
+        List<Deficient> deficient = new ArrayList<>();
+        Call<List<Deficient>> call = this.service.getDeficients();
+        call.enqueue(new Callback<List<Deficient>>() {
             @Override
-            public void onResponse(Call<List<DeficientModel>> call, Response<List<DeficientModel>> response) {
-                List<DeficientModel> deficientModel = response.body();
+            public void onResponse(Call<List<Deficient>> call, Response<List<Deficient>> response) {
+                List<Deficient> deficient = response.body();
 
             }
 
             @Override
-            public void onFailure(Call<List<DeficientModel>> call, Throwable t) {
+            public void onFailure(Call<List<Deficient>> call, Throwable t) {
 
             }
         });
